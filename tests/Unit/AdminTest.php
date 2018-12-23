@@ -3,6 +3,7 @@
 namespace Tests\Unit;
 
 use App\TheLoai;
+use App\User;
 use Tests\TestCase;
 use Auth;
 use Hash;
@@ -25,25 +26,43 @@ class AdminTest extends TestCase
     public function test_login_admin()
     {
 
-        $dangnhap = $this->post('/admin/dangnhap', [
+        $dangnhap = $this->post(route('login'), [
 
-            'email' => 'hongocluan1993@mail.com',
+            'email' => 'hongocluan1993@gmail.com',
             'password' => '123456',
 
         ]); //đăng nhập tài khoản customer
-        $this->assertTrue(Auth::guard('admin')->check());//da dang nhap
+        $this->assertTrue(Auth::check());//da dang nhap
     }
     public function test_create_a_theloai()
     {
-        Auth::guard('admin')->attempt(['email' => 'hongocluan1993@mail.com', 'password' => '123456']);//ham dang nhap admin
-        $response = $this->post('/admin/category-add', [
+        $user = User::first();
+        $this->actingAs($user);
+        $response = $this->post('/admin/theloai/them', [
 
-            'Ten' => 'API',
+            'txtCateName' => 'API',
 
         ]);
-        $theloai = TheLoai::latest()->first();
-        $this->assertTrue(Auth::guard('admin')->check());//da dang nhap
+//        dd($response);
+        $theloai = TheLoai::where('Ten','API')->first();
+        $this->assertTrue(Auth::check());//da dang nhap
         $this->assertEquals('API', $theloai->Ten);
+
+    }
+
+    public function test_edit_admin_theloai()
+    {
+        $user = User::first();
+        $this->actingAs($user);
+
+        $theloai = TheLoai::latest()->first();
+        $response = $this->post('/admin/theloai/sua/' . $theloai->id, [
+
+            'txtCateName' => 'Mobile2',
+        ]);
+        $theloaicurrent = TheLoai::latest()->first();
+        $this->assertTrue(Auth::check());
+        $this->assertEquals('Mobile2', $theloaicurrent->Ten);
 
     }
 

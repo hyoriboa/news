@@ -18,7 +18,7 @@ Route::get('/', function () {
 });
 
 Route::get('admin/dangnhap','UserController@dangnhapAdmin');
-Route::post('admin/dangnhap','UserController@postdangnhapAdmin');
+Route::post('admin/dangnhap','UserController@postdangnhapAdmin')->name('login');
 Route::get('admin/logout','UserController@getDangXuatpAdmin');
 
 
